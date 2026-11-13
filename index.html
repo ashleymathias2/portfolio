@@ -66,10 +66,6 @@
     background-image:linear-gradient(rgba(255,255,255,.032) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.032) 1px, transparent 1px);
     background-size:34px 34px;
   }
-  #screen-lab{
-    background-image:repeating-linear-gradient(0deg, rgba(255,194,71,.03) 0px, rgba(255,194,71,.03) 1px, transparent 1px, transparent 42px),
-                      repeating-linear-gradient(90deg, rgba(255,194,71,.03) 0px, rgba(255,194,71,.03) 1px, transparent 1px, transparent 42px);
-  }
   #screen-roots{
     background-image:repeating-linear-gradient(180deg, transparent 0px, transparent 27px, rgba(255,255,255,.035) 28px);
   }
@@ -312,30 +308,6 @@
   }
   .item-chip .ic-emoji{font-size:1.15rem;}
 
-  /* ================= WORKSHOP (Lab) ================= */
-  .lab-intro{color:var(--muted);line-height:1.65;font-size:1rem;max-width:560px;margin-bottom:2rem;}
-  .spell-demo{background:var(--navy-2);border:1px solid var(--line);border-radius:14px;padding:1.6rem;}
-  .spell-demo h3{font-size:1.2rem;margin-bottom:.3rem;}
-  .spell-demo .sd-sub{color:var(--muted);font-size:.9rem;margin-bottom:1.2rem;}
-  .sd-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.2rem;}
-  #spellInput{
-    flex:1;min-width:180px;background:var(--navy);border:1px solid var(--line);border-radius:8px;
-    color:var(--paper);padding:.7rem .9rem;font-family:var(--font-mono);font-size:1rem;text-transform:uppercase;letter-spacing:.05em;
-  }
-  #spellInput:focus{outline:2px solid var(--gold);outline-offset:2px;}
-  #castBtn{
-    all:unset;cursor:pointer;font-family:var(--font-mono);font-weight:700;font-size:.85rem;text-transform:uppercase;
-    background:var(--coral);color:#1a1a1a;padding:.7rem 1.3rem;border-radius:8px;
-  }
-  #castBtn:hover{filter:brightness(1.08);}
-  .spell-tiles{min-height:2.6rem;margin-bottom:1rem;}
-  .spell-tiles .tile{--size:2.4rem;}
-  .spell-result{display:none;padding-top:1rem;border-top:1px solid var(--line);}
-  .spell-result.show{display:block;}
-  .sr-damage{font-family:var(--font-mono);font-weight:700;font-size:1.6rem;color:var(--paper);}
-  .sr-damage span{font-size:.85rem;font-weight:400;color:var(--muted-dark);}
-  .sr-msg{font-size:.92rem;color:var(--muted);}
-
   /* ================= ORIGIN STORY (Roots) ================= */
   .chapter{background:var(--navy-2);border:1px solid var(--line);border-radius:12px;margin-bottom:.9rem;overflow:hidden;}
   @media (prefers-reduced-motion:no-preference){ .chapter{ transition:height .3s ease; } }
@@ -406,7 +378,6 @@
   <button data-target="screen-experience" aria-label="Experience" title="Quest Log"></button>
   <button data-target="screen-games" aria-label="Games" title="Level Select"></button>
   <button data-target="screen-skills" aria-label="Skills" title="Character Sheet"></button>
-  <button data-target="screen-lab" aria-label="Lab" title="Workshop"></button>
   <button data-target="screen-roots" aria-label="Roots" title="Origin Story"></button>
   <button data-target="screen-contact" aria-label="Contact" title="Co-op"></button>
 </nav>
@@ -464,10 +435,9 @@
       <h3>Freelance Game Designer</h3>
       <div class="quest-meta">Apr 2026 - Present · Remote</div>
       <ul>
-        <li>Designing a word-based mobile game concept</li>
-        <li>Writing full game design documentation: mechanics, economy, monetization</li>
-        <li>Prototyping core gameplay in Unity</li>
-        <li>Aiming to break from the genre's usual conventions</li>
+        <li>Designing a hybrid-casual game idea end to end, from core loop to progression and content systems</li>
+        <li>Prototyping gameplay in Unity with AI-assisted workflows (Claude Code) to test ideas fast</li>
+        <li>Balancing scoring, difficulty and reward curves through repeated playtest iteration</li>
       </ul>
     </div>
 
@@ -622,28 +592,6 @@
         <div class="item-chip"><span class="ic-emoji">🧭</span>Project Management</div>
         <div class="item-chip"><span class="ic-emoji">⚡</span>AI-Assisted Prototyping</div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- WORKSHOP: LAB -->
-<section class="screen" id="screen-lab" data-screen="lab">
-  <span class="side-glyph right" aria-hidden="true">🧪</span>
-  <div class="wrap">
-    <div class="screen-top"><button class="back-btn" data-back>‹ Top</button></div>
-    <div class="screen-eyebrow">Workshop</div>
-    <h2>Currently Prototyping</h2>
-    <p class="lab-intro">A word-based mobile game, currently in early development. More details to come as the project progresses.</p>
-
-    <div class="spell-demo">
-      <h3>Try the mechanic</h3>
-      <p class="sd-sub">Type a word and cast it, exactly like the in-game spell system.</p>
-      <div class="sd-row">
-        <input type="text" id="spellInput" maxlength="14" placeholder="e.g. AZURE" autocomplete="off" spellcheck="false">
-        <button id="castBtn">Cast ✦</button>
-      </div>
-      <div class="tile-row spell-tiles" id="spellTiles" aria-live="polite"></div>
-      <div class="spell-result" id="spellResult" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -1136,66 +1084,6 @@
       }
     });
   }
-
-  /* ---- Spell-cast demo (Workshop mechanic) ---- */
-  const SCRABBLE = {A:1,B:3,C:3,D:2,E:1,F:4,G:2,H:4,I:1,J:8,K:5,L:1,M:3,N:1,O:1,P:3,Q:10,R:1,S:1,T:1,U:1,V:4,W:4,X:8,Y:4,Z:10};
-
-  function renderTiles(word){
-    const container = document.getElementById('spellTiles');
-    container.innerHTML = '';
-    word.split('').forEach(ch => {
-      const tile = document.createElement('div');
-      tile.className = 'tile';
-      tile.textContent = ch;
-      const val = document.createElement('span');
-      val.className = 'val';
-      val.textContent = SCRABBLE[ch] || 1;
-      tile.appendChild(val);
-      container.appendChild(tile);
-    });
-  }
-
-  const BLOCKED_WORDS = new Set([
-    'fuck','fucker','fucking','shit','bitch','bastard','asshole','ass','dick','cock',
-    'pussy','cunt','twat','slut','whore','piss','crap','damn','fag','faggot','dyke',
-    'tranny','retard','spic','chink','kike','nigger','nigga','wetback','rape','rapist'
-  ]);
-
-  function castSpell(){
-    const raw = document.getElementById('spellInput').value.toUpperCase().replace(/[^A-Z]/g, '');
-    const resultEl = document.getElementById('spellResult');
-    if (!raw) { resultEl.classList.remove('show'); document.getElementById('spellTiles').innerHTML = ''; return; }
-
-    renderTiles(raw);
-
-    if (raw.length < 3) {
-      resultEl.innerHTML = `<div class="sr-msg">Type at least 3 letters to cast.</div>`;
-      resultEl.classList.add('show');
-      return;
-    }
-    if (BLOCKED_WORDS.has(raw.toLowerCase())) {
-      resultEl.innerHTML = `<div class="sr-msg">Let's keep it friendly. Try another word.</div>`;
-      resultEl.classList.add('show');
-      return;
-    }
-
-    const letters = raw.split('');
-    const totalValue = letters.reduce((sum, l) => sum + (SCRABBLE[l] || 1), 0);
-    const avgRarity = totalValue / letters.length;
-    const damage = Math.round(letters.length * avgRarity * 10) / 10;
-
-    resultEl.innerHTML = `
-      <div class="sr-damage">${damage} <span>damage · Length ${letters.length} × Avg rarity ${avgRarity.toFixed(1)}</span></div>
-    `;
-    resultEl.classList.add('show');
-  }
-
-  document.getElementById('castBtn').addEventListener('click', () => {
-    gtag('event', 'cast_button_click');
-    castSpell();
-  });
-  document.getElementById('spellInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') castSpell(); });
-  document.getElementById('spellInput').addEventListener('input', (e) => renderTiles(e.target.value.toUpperCase().replace(/[^A-Z]/g, '')));
 </script>
 
 </body>
